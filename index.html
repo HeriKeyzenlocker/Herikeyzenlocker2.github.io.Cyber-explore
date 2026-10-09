@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Cyber Explore — HeriKeyzenlocker👑</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cyber Explore by HeriKeyzenlocker — Eksplorasi dunia digital dari sudut negeri.">
+    <meta property="og:title" content="Cyber Explore — HeriKeyzenlocker👑">
+    <meta property="og:description" content="Cyber Explore — Lab pribadi, riset keamanan, dan edukasi oleh HeriKeyzenlocker.">
+    <meta property="og:image" content="https://files.catbox.moe/eyxe1p.jpg">
+    <meta name="theme-color" content="#ff0000">
+    <link rel="icon" href="https://files.catbox.moe/eyxe1p.jpg" type="image/jpeg">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100%;
+            font-family: 'Share Tech Mono', monospace;
+            background: url('https://k.top4top.io/p_3490c2wv80.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            overflow-y: auto;
+            animation: lightning 5s infinite;
+        }
+        @keyframes lightning {
+            0%, 97%, 100% { filter: brightness(1); }
+            98% { filter: brightness(3); }
+            99% { filter: brightness(0.2); }
+        }
+        canvas#matrixCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            opacity: 0.3;
+            pointer-events: none;
+            filter: drop-shadow(0 0 3px #0f0);
+        }
+        .content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 40px 20px 40px;
+            max-width: 95vw;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* === ASCII ROTATING === */
+        .ascii-box {
+            color: red;
+            font-size: 5px;
+            line-height: 1.05;
+            text-shadow: 0 0 10px red;
+            overflow-x: auto;
+            margin: 10px 0 20px;
+            white-space: pre;
+            font-family: monospace;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease;
+        }
+        .ascii-box.fade { opacity: 0; }
+
+        img.logo {
+            width: clamp(180px, 40vw, 240px);
+            height: clamp(180px, 40vw, 240px);
+            border-radius: 50%;
+            border: 3px solid red;
+            box-shadow: 0 0 30px red, 0 0 60px rgba(255,0,0,0.5);
+            display: block;
+            margin: 10px auto 20px;
+            object-fit: cover;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 30px red, 0 0 60px rgba(255,0,0,0.5); }
+            50% { box-shadow: 0 0 50px red, 0 0 90px rgba(255,0,0,0.8); }
+        }
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            margin: 10px 0;
+            color: #fff;
+            position: relative;
+            text-shadow: 0 0 15px red;
+        }
+        h1::before, h1::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        h1::before { color: #ff0000; animation: glitch-1 0.3s infinite; z-index: -1; }
+        h1::after  { color: #00ffff; animation: glitch-2 0.3s infinite; z-index: -2; }
+        @keyframes glitch-1 {
+            0% { transform: translate(0); }
+            20% { transform: translate(-3px, 2px); }
+            40% { transform: translate(-3px, -2px); }
+            60% { transform: translate(3px, 2px); }
+            80% { transform: translate(3px, -2px); }
+            100% { transform: translate(0); }
+        }
+        @keyframes glitch-2 {
+            0% { transform: translate(0); }
+            20% { transform: translate(3px, -2px); }
+            40% { transform: translate(3px, 2px); }
+            60% { transform: translate(-3px, -2px); }
+            80% { transform: translate(-3px, 2px); }
+            100% { transform: translate(0); }
+        }
+        p { font-size: 0.95rem; margin: 10px 0; }
+        .highlight { color: red; font-weight: bold; }
+        .terminal {
+            background: #0a0a0a;
+            border-radius: 10px;
+            border: 1px solid #333;
+            max-width: 600px;
+            margin: 20px auto;
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(0,255,0,0.2);
+            text-align: left;
+        }
+        .terminal-bar {
+            background: #1a1a1a;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot.red { background: #ff5f56; }
+        .dot.yellow { background: #ffbd2e; }
+        .dot.green { background: #27c93f; }
+        .terminal-title { color: #888; font-size: 11px; margin-left: 10px; }
+        .terminal-body {
+            padding: 18px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        .hacklog {
+            background: rgba(0,0,0,0.9);
+            border: 1px solid #0f0;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 12px;
+            color: #0f0;
+            height: 180px;
+            overflow: hidden;
+            max-width: 600px;
+            margin: 20px auto;
+            text-align: left;
+            box-shadow: 0 0 20px rgba(0,255,0,0.3);
+        }
+        .hacklog div { animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateX(-5px); } to { opacity: 1; transform: translateX(0); } }
+        #breach {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ff0000;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 13px;
+            box-shadow: 0 0 30px red;
+            z-index: 9999;
+            display: none;
+            animation: shake 0.5s infinite;
+            max-width: 80vw;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translate(0); }
+            25% { transform: translate(-2px, 2px); }
+            75% { transform: translate(2px, -2px); }
+        }
+        .marquee-container { margin: 20px auto; overflow: hidden; white-space: nowrap; max-width: 95vw; }
+        .marquee-text {
+            display: inline-block;
+            animation: scroll-left 35s linear infinite;
+            font-size: 0.85rem;
+        }
+        @keyframes scroll-left {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .blink { animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+        .btn {
+            padding: 12px 24px;
+            margin: 10px;
+            border: 2px solid red;
+            background-color: rgba(255, 0, 0, 0.1);
+            backdrop-filter: blur(3px);
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 0 10px red;
+            border-radius: 4px;
+        }
+        .btn:hover { background: red; color: black; }
+        #clock, #date { margin-top: 15px; font-size: 1.1rem; color: #0f0; }
+        .footer { font-size: 0.75rem; color: #888; margin-top: 30px; padding-bottom: 20px; }
+        @media (max-width: 600px) {
+            h1 { font-size: 1.3rem; }
+            p { font-size: 0.85rem; }
+            .ascii-box { font-size: 3px; min-height: 160px; }
+            .terminal-body { font-size: 11px; padding: 12px; }
+            .hacklog { font-size: 10px; height: 150px; }
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <canvas id="matrixCanvas"></canvas>
+    <audio id="lagu" src="https://i.top4top.io/m_3159n9kn80.mp3" autoplay loop></audio>
+
+    <div id="breach">⚠️ SYSTEM BREACH DETECTED — ACCESS GRANTED</div>
+
+    <div class="content">
+
+        <!-- ASCII ROTATING -->
+        <div class="ascii-box" id="asciiBox"></div>
+
+        <img src="https://files.catbox.moe/eyxe1p.jpg" class="logo" alt="HeriKeyzenlocker">
+
+        <h1 data-text="CYBER EXPLORE — HERIKEYZENLOCKER👑">CYBER EXPLORE — HERIKEYZENLOCKER👑</h1>
+
+        <p>We are <span class="highlight">CYBER EXPLORE HERIKEYZENLOCKER</span></p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="dot red"></div>
+                <div class="dot yellow"></div>
+                <div class="dot green"></div>
+                <span class="terminal-title">herikeyzenlocker@cyber-explore:~</span>
+            </div>
+            <div class="terminal-body">
+                <div style="color:#0f0;">┌──[herikeyzenlocker@banjaran-sudom]─[~]</div>
+                <div style="color:#0f0;">└─$ <span id="typing"></span><span class="blink">█</span></div>
+            </div>
+        </div>
+
+        <p style="max-width: 600px; margin: 20px auto; text-align: justify;">
+            Ini bukan sekadar nama, ini sebuah perjalanan. Cyber Explore adalah ruang belajar, riset,
+            dan eksplorasi dunia digital yang gua bangun dari nol. Dari sudut negeri yang jauh dari hiruk pikuk kota,
+            gua buktiin kalau anak pelosok juga bisa nyentuh dunia cyber.
+            Ga ada sekolah formal, ga ada mentor, cuma ada niat, HP 2GB RAM, dan otak yang ga mau berhenti mikir.
+            Di sini gua pelajari jaringan, sistem, kode, dan keamanan — semua untuk lab pribadi dan edukasi.
+            Setiap baris kode adalah pelajaran, setiap error adalah guru. Gua ga nyerang, gua belajar.
+            Gua ga ngerusak, gua paham. Karena ilmu yang bener bukan buat nyakitin, tapi buat ngelindungin.
+        </p>
+
+        <div style="margin-top: 20px; font-size: 1.05rem; color: red; text-shadow: 0 0 5px white;">
+            "Belajar Tanpa Batas, Berkarya Tanpa Henti."
+        </div>
+
+        <div class="hacklog" id="hacklog"></div>
+
+        <div class="marquee-container">
+            <div class="marquee-text">
+                Special Thanks To:
+                <span class="highlight"> HERIKEYZENLOCKER 👑 </span> |
+                <span style="color:red;"> PMJB v98.1 | Safe Zone Mode | Cyber Explore | </span>
+            </div>
+        </div>
+
+        <p>We Explore The Digital World Since 2022.</p>
+
+        <div>
+            <button class="btn" onclick="window.location.href='https://t.me/+gwdAGj6qGGkyMGM1'">
+                Ngobrol Santuy Sama Bos
+            </button>
+        </div>
+
+        <p>Tagline <span class="highlight">#CYBER_EXPLORE #HERIKEYZENLOCKER #DIGITAL_EXPLORER</span></p>
+
+        <div id="clock">--:--:--</div>
+        <div id="date">Loading...</div>
+
+        <div class="footer">© 2026 | CYBER EXPLORE HERIKEYZENLOCKER👑 | All rights reserved</div>
+    </div>
+
+    <script>
+        // ================== 3 ASCII ART ==================
+        const asciiArts = [
+` ██████╗██╗   ██╗██████╗ ███████╗██████╗ 
+██╔════╝╚██╗ ██╔╝██╔══██╗██╔════╝██╔══██╗
+██║      ╚████╔╝ ██████╔╝█████╗  ██████╔╝
+██║       ╚██╔╝  ██╔══██╗██╔══╝  ██╔══██╗
+╚██████╗   ██║   ██████╔╝███████╗██║  ██║
+ ╚═════╝   ╚═╝   ╚═════╝ ╚══════╝╚═╝  ╚═╝
+        E X P L O R E  —  HERIKEYZENLOCKER`,
+
+`⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠁  ⠈⠉⠙⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟         ⠈⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⡟            ⠈⢻⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⡟     ⢀⣠⣤⣤⣤⣤⣄   ⠹⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⠁    ⠾⣿⣿⣿⣿⠿⠛⠉    ⠘⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⡏   ⣤⣶⣤⣉⣿⣿⡯⣀⣴⣿⡗    ⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⡇   ⡈  ⠉⣿⣿⣶⡉  ⣀⡀   ⢻⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⡇  ⠸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠇   ⢸⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿   ⠉⢉⣽⣿⠿⣿⡿⢻⣯⡍⢁⠄   ⣸⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⡄  ⠐⡀⢉⠉ ⠠ ⢉⣉ ⡜    ⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⠿⠁   ⠘⣤⣭⣟⠛⠛⣉⣁⡜     ⠛⠿⣿⣿⣿
+⡿⠟⠛⠉⠉       ⠈⢻⣿⡀ ⣿⠏         ⠈⠉
+              ⠉⠁ ⠁`,
+
+`⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣼
+⠀⢿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣤⠴⠶⠖⠒⠛⣿⣽⡟⠛⠓⠒⠶⠶⢤⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⠴⣯⠏
+⠀⠀⢿⣯⣿⠷⣶⣤⡴⣶⣶⣤⠤⠤⣤⣄⡀⠀⣀⡤⠶⠛⠉⠀⠀⠀⠀⠀⠀⠴⠿⣼⠿⠦⠀⠀⠀⠀⠀⠀⠉⠛⠲⢦⣄⣀⣤⣴⠒⣻⣿⣿⢻⣿⣿⣿⠋⣩⣴⠋⠀
+⠀⠀⠀⠙⠿⣦⣼⣟⢷⣷⢹⣿⣌⣿⡟⢺⣿⠛⠻⣄⠀⠀⠀⠀⢀⣠⣤⠤⠖⠒⠒⠛⠒⠒⠒⠦⠤⣤⣀⠀⠀⢀⣤⠖⠛⢿⣇⠐⡾⣷⣿⡟⢚⣿⣷⣿⠶⠋⠁⠀⠀
+⠀⠀⠀⠀⠀⠈⠙⠛⠛⠻⠾⢿⣾⣮⣗⣸⣿⣆⠄⠀⠙⣦⡖⠛⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢉⣷⡟⠀⡀⢨⣽⣿⣽⣶⢿⡿⠛⠛⠉⠁⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⠛⠉⠙⠻⢿⣷⣶⡂⣸⡟⠓⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⠞⠛⣧⣄⣿⣾⣿⡋⠉⠀⠀⠙⢦⡀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⠟⠁⠀⠀⠀⣠⠾⣿⣿⣿⣿⡁⠀⠈⢳⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⠋⠀⠀⣿⣿⣿⣫⣶⠟⢦⡀⠀⠀⣀⠹⣆⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⢀⡼⢿⡷⣾⠀⢀⡞⠁⠀⠹⡄⢻⣿⣿⡆⠀⠘⣿⣦⣤⣀⣀⠀⠀⣀⣀⣤⣶⣿⡯⠀⢀⣾⣿⡿⠋⢀⡞⠀⠀⠙⢆⣀⣿⣻⣯⣷⡀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⢀⡾⠷⠛⢳⡞⣻⠋⠀⠀⠀⠀⢳⡀⢻⣿⣿⣦⣠⣿⡯⣷⡉⣽⠿⠿⠟⠉⣹⡯⣿⣷⣤⣾⣿⣿⠁⠀⣼⠃⠀⠀⠀⠈⠻⡍⠏⠁⠉⢷⡀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⢀⡾⠁⠀⠀⠈⡱⠁⠀⠀⠀⠀⠀⠈⢷⠈⣿⣿⣿⠟⣿⣇⡝⣮⡈⠀⠀⠀⣴⡟⠀⢿⡟⢿⣻⣿⣇⠀⣰⠇⠀⠀⠀⠀⠀⠀⠙⡄⠀⠀⠀⢿⡀⠀⠀⠀
+⠀⠀⠀⠀⠀⣼⠇⠀⠀⠀⡼⠃⠀⠀⠀⣀⣀⣠⣤⣼⠿⣿⢿⠃⣰⠋⠈⠁⢻⡙⢶⣴⠟⣹⠃⠀⠀⠱⡄⢹⣿⣟⠲⢿⠤⠤⣤⣤⣀⡀⠀⠀⠸⡆⠀⠀⠈⣧⠀⠀⠀
+⠀⠀⠀⠀⢠⡏⠀⠀⠀⣰⣃⣤⠖⠋⣉⡡⢆⣠⠟⠁⣼⣿⡿⢸⣇⠶⠊⠀⢸⣷⠛⠉⢳⣿⠀⠀⠐⢶⠹⡌⣿⡿⣆⠈⠱⢦⡐⠦⣄⣉⣙⣶⣄⣹⡀⠀⠀⢸⡇⠀⠀
+⠀⠀⠀⠀⣾⠀⠀⢰⣶⣿⣿⣿⡿⢿⣥⣶⣟⣁⣠⣞⣽⠟⡇⢸⣿⡀⣀⡴⠋⢹⡄⠀⣸⣉⣻⣦⣄⣸⣰⡇⣿⢹⣮⣷⣤⣤⣿⠿⠞⣛⣿⣿⣿⣿⡿⠂⠀⠀⢿⠀⠀
+⠀⠀⠀⠀⡟⠀⠀⠀⢹⠋⠳⢿⣿⣷⡶⠦⢭⣽⣾⣿⡟⠰⢷⣘⣿⠁⠿⠋⠉⠙⣿⠉⡿⠉⠉⠉⠏⢩⣿⢠⣟⣐⣿⣿⢷⣾⣷⣒⣩⣿⠿⠟⠉⠀⢱⠀⠀⠀⢸⠀⠀
+⠀⠀⠀⢠⡇⠀⠀⠀⢸⠀⠀⠀⠈⠙⠻⠿⢿⣿⣿⣿⡟⣠⣾⣳⣽⣷⣦⢠⠄⣖⢹⣿⠃⠃⠠⠂⣰⣿⣿⢿⣧⣄⣻⣿⣿⣛⠟⠛⠋⠀⠀⠀⠀⠀⢸⡄⠀⠀⢸⡇⠀
+⠀⠀⠀⢸⡇⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⢀⣸⠿⠋⢻⣿⣿⣿⣿⡽⣽⣾⣿⣦⣬⠞⠏⠀⢤⣼⣿⣿⣿⢱⣿⣿⣿⣿⡆⠈⠙⠲⣤⡀⠀⠀⠀⠀⠀⢸⡇⠀⠀⢸⡇⠀
+⠀⠀⠀⠀⡇⢰⣄⣤⣾⠀⠀⠀⢀⣠⠶⠋⠁⠀⢀⣾⣿⢿⣿⣾⣇⢹⡏⣻⣿⠞⠀⠀⠀⠰⣿⣏⣸⡇⣾⣿⣿⣿⣿⣿⠀⠀⠀⠀⠙⠳⢦⣀⠀⠀⢸⢳⣦⡞⢸⡇⠀
+⠀⠀⠀⠀⣷⡼⣯⡽⢿⣆⣤⣞⣋⣀⣀⣀⣀⣀⣸⣿⣿⣧⠬⠹⣯⣬⣿⠉⠹⣄⠀⠀⠀⣰⠏⠉⣿⢤⣿⠟⠲⣾⣿⣻⣧⣤⣤⣤⡤⠤⠤⠽⠿⢦⡼⠛⣷⠛⢿⠀⠀
+⠀⠀⠀⠀⢻⡄⠘⠃⠀⢿⠀⠀⠀⠀⠀⠀⠀⠀⠘⢿⣿⣷⣄⠀⢻⣿⠏⢦⠀⠈⠐⠀⠸⡁⠀⡟⠙⣿⠟⠀⣠⣾⣿⣾⠃⠀⠀⠀⠀⠀⠀⠀⠀⢠⡇⠀⠙⢀⡿⠀⠀
+⠀⠀⠀⠀⠘⣇⠀⠀⠀⠈⡇⠀⠀⠀⠀⠀⠀⠀⠀⠈⢿⣿⣿⣷⣄⠿⣄⠈⢿⡆⠀⠀⠀⢴⡿⠀⣠⠟⣠⣾⣿⢿⡽⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⡞⠀⠀⠀⣸⠇⠀⠀
+⠀⠀⠀⠀⠀⢹⡆⠀⠀⠀⠘⣆⠀⠀⠀⠀⠀⠀⠀⠀⠈⢿⣿⣿⢿⣶⡈⢦⢸⡇⠀⢠⠀⢸⡇⠐⢁⣼⣿⢿⣯⡟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⡼⠁⠀⠀⢠⡏⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⢻⡄⠀⠀⠀⠘⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢶⣿⣿⣳⠀⠀⡇⠀⣼⠀⢸⡇⠀⣜⣿⣹⠶⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡼⠁⠀⠀⢀⡿⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⢻⡄⠀⠀⠀⠈⢣⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⣯⡃⢸⡇⠀⢹⠂⠈⡇⠀⣿⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⠞⠀⠀⠀⢠⡞⠁⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠹⣆⠀⠀⠀⠀⠙⢦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣽⠷⣼⠃⠀⠀⠀⠀⢷⡰⢹⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠔⠁⠀⠀⠀⣠⠟⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢷⣄⠀⠀⠀⠀⠙⢦⣀⠀⠀⠀⠀⠀⠀⠀⢿⣴⣿⣦⣀⣠⣀⣤⣿⣧⢾⠆⠀⠀⠀⠀⠀⠀⠀⣠⠶⠃⠀⠀⠀⢀⡼⠋⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢦⡀⠀⠀⠀⣆⣉⣷⢦⣀⠀⠀⠀⠀⢸⡜⠿⣷⣿⣿⠿⣽⡿⠛⡞⠀⠀⠀⠀⢀⣠⣴⢊⣁⠀⠀⠀⢀⣴⠟⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠦⣄⣠⢿⣩⡷⡄⠈⠙⠓⠤⢤⣀⣙⣦⣈⣻⣦⣾⣁⣠⣞⣁⣀⠤⠴⠚⠋⣀⣿⣻⣧⡀⣀⡴⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠑⠦⣟⡀⠀⠀⠀⠀⠀⠀⠀⠉⠉⢿⡿⠷⣿⢿⡯⠉⠉⠀⠀⠀⠀⠀⠉⠉⣿⡾⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠓⠶⣄⣀⡀⠀⠀⠀⠀⠀⠙⣶⡿⢸⠇⠀⠀⠀⠀⣀⣠⠴⠞⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠛⠒⠒⠲⢾⣟⡥⠿⠒⠒⠛⠛⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿`
+        ];
+
+        let asciiIndex = 0;
+        const asciiBox = document.getElementById('asciiBox');
+
+        function showAscii() {
+            asciiBox.classList.add('fade');
+            setTimeout(() => {
+                asciiBox.textContent = asciiArts[asciiIndex];
+                asciiBox.classList.remove('fade');
+                asciiIndex = (asciiIndex + 1) % asciiArts.length;
+            }, 800);
+        }
+        showAscii();
+        setInterval(showAscii, 5000);
+        // =================================================
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const audio = document.getElementById('lagu');
+            const playAudio = () => { audio.play().catch(() => {}); document.removeEventListener('click', playAudio); };
+            document.addEventListener('click', playAudio);
+        });
+
+        function showTime() {
+            const now = new Date();
+            let h = now.getHours();
+            const m = now.getMinutes().toString().padStart(2, '0');
+            const s = now.getSeconds().toString().padStart(2, '0');
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12;
+            document.getElementById('clock').textContent = `${h}:${m}:${s} ${ampm}`;
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('date').textContent = now.toLocaleDateString('en-US', options);
+        }
+        setInterval(showTime, 500); showTime();
+
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        const fontSize = 16;
+        let drops = [];
+        function initMatrix() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            drops = Array.from({ length: canvas.width / fontSize }).fill(1);
+        }
+        function drawMatrix() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#0F0";
+            ctx.font = `${fontSize}px monospace`;
+            const chars = "010101010101 CYBER EXPLORE HERIKEYZENLOCKER 010101010101".split("");
+            for (let i = 0; i < drops.length; i++) {
+                ctx.fillText(chars[Math.floor(Math.random() * chars.length)], i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        initMatrix(); setInterval(drawMatrix, 33);
+        window.addEventListener('resize', initMatrix);
+
+        const text = "whoami && echo 'Raja Setan dari Banjaran Sudom' && uname -a";
+        let i = 0;
+        function typeWriter() {
+            if (i < text.length) {
+                document.getElementById('typing').innerHTML += text.charAt(i);
+                i++;
+                setTimeout(typeWriter, 80);
+            }
+        }
+        setTimeout(typeWriter, 1000);
+
+        const logs = [
+            "[+] Initializing Cyber Explore v98.1...",
+            "[+] Loading modules: NETWORK_AUDIT... OK",
+            "[+] Loading modules: OSINT_LEGAL... OK",
+            "[+] Loading modules: CRYPTO_TOOLS... OK",
+            "[*] Scanning localhost... 22, 80, 443 open",
+            "[*] Encrypting connection with AES-256...",
+            "[✓] Connection secure.",
+            "[!] Warning: Do not use for illegal activity.",
+            "[✓] Safe Zone Mode: ACTIVE",
+            "[✓] Welcome, HeriKeyzenlocker 👑",
+            "[*] Rajin belajar, jangan nyerang orang.",
+        ];
+        let idx = 0;
+        function addLog() {
+            const box = document.getElementById('hacklog');
+            const line = document.createElement('div');
+            line.textContent = logs[idx % logs.length];
+            box.appendChild(line);
+            idx++;
+            if (box.children.length > 10) box.removeChild(box.firstChild);
+            setTimeout(addLog, 800);
+        }
+        setTimeout(addLog, 1500);
+
+        setTimeout(() => {
+            const breach = document.getElementById('breach');
+            breach.style.display = 'block';
+            setTimeout(() => breach.style.display = 'none', 3000);
+        }, 5000);
+    </script>
+
+</body>
+</html>
